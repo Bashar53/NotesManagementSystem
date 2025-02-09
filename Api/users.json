@@ -1,0 +1,44 @@
+[
+  {
+    "UserId": "740e76f1-4790-4ac2-ae08-58f51ac0ea38",
+    "Name": "Bashar",
+    "Email": "bashar.iiuc77@gmail.com",
+    "DateOfBirth": "1999-02-07T00:55:59.919Z",
+    "PasswordHash": "$2a$11$dCLdZky2II3wWRz/HYp2WudvrXqbEA9Q26vJrN1Wxb63jmtq3HheK"
+  },
+  {
+    "UserId": "935363e0-877d-4e7a-9be8-7e49f9f6695c",
+    "Name": "Md Bashar",
+    "Email": "bashar1@gmail.com",
+    "DateOfBirth": "2025-02-06T00:00:00",
+    "PasswordHash": "$2a$11$RmZeyEzmUC5SuL2nLYnHD.j1zuwWWJ2RonqOTpjnKOhIa6NZlsyrG"
+  },
+  {
+    "UserId": "56b9697e-d629-40a0-b11b-623474505566",
+    "Name": "Md Abul Bashar",
+    "Email": "bashar.iiuc771@gmail.com",
+    "DateOfBirth": "2025-01-28T00:00:00",
+    "PasswordHash": "$2a$11$hn3mryQU8Yg2be5Ua7q.a.zxjRbipYNBCgzIFw5OgiGHQL8PIRWD6"
+  },
+  {
+    "UserId": "bcf79256-72f3-4909-b646-3e2aef205478",
+    "Name": "Md Abul Bashar",
+    "Email": "bashar.iiuc7721e32re@gmail.com",
+    "DateOfBirth": "2025-02-05T00:00:00",
+    "PasswordHash": "$2a$11$WBs4MGGUuPRhZEgD9C17eurLJ1XIX603Q9T.hItxsYrJjXFvPzohq"
+  },
+  {
+    "UserId": "a6255d30-d416-4abd-8671-3d1da673d355",
+    "Name": "Md Abul Bashar",
+    "Email": "bashar.iiuc@gmail.com",
+    "DateOfBirth": "2025-02-05T00:00:00",
+    "PasswordHash": "$2a$11$ScI4l.s7M4rpeByCdIkDLeldl4fjfEyI5155Z.7S3bo64SFKtHFiG"
+  },
+  {
+    "UserId": "791c0379-27e4-4e55-9144-5be2c22618df",
+    "Name": "Md Abul Bashar",
+    "Email": "bashar.iiuc77112efr@gmail.com",
+    "DateOfBirth": "2025-02-27T00:00:00",
+    "PasswordHash": "$2a$11$RX6vCD/Wbk67bO2d33wCru5PtoD6UrPfgjm8rEMCAFTAHfgpk.VDy"
+  }
+]
