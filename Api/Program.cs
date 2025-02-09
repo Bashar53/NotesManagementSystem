@@ -67,22 +67,21 @@ builder.Services.AddCors(options =>
     });
 });
 
-// ✅ 3️⃣ Add JWT Authentication
 
 
-// ✅ 4️⃣ Add Authorization
+
 builder.Services.AddAuthorization();
 
-// ✅ 5️⃣ Add API Controllers
+
 builder.Services.AddControllers();
 
-// ✅ 6️⃣ Add Swagger for API documentation
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 
-    // 🔥 Add JWT Authentication to Swagger
+   
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -109,28 +108,24 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-// ✅ 7️⃣ Build Application
+
 var app = builder.Build();
 
-// ✅ Enable CORS (Placed BEFORE Authentication)
+
 app.UseCors("AllowAll");
 
-// ✅ Enable HTTPS
+
 app.UseHttpsRedirection();
 
-// ✅ Enable Authentication & Authorization
-app.UseAuthentication(); // Only once
-app.UseAuthorization();  // Only once
 
-// ✅ Enable Swagger (Only in Development)
+app.UseAuthentication(); 
+app.UseAuthorization();  
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// ✅ Map API Controllers
 app.MapControllers();
 
-// ✅ 9️⃣ Run Application
 app.Run();
