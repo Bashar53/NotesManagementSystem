@@ -1,0 +1,217 @@
+﻿@model FrontEnd.Controllers.NoteVM
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+<div class="container mt-5">
+    <h2>Create a New Note</h2>
+
+    <form id="createNoteForm">
+        <div class="form-group">
+            <label for="type">Note Type:</label>
+            <select id="type" class="form-control" required>
+                <option value="" disabled selected>Select Note Type</option>
+                <option value="0">Regular Note</option>
+                <option value="1">Reminder</option>
+                <option value="2">Task</option>
+                <option value="3">Bookmark</option>
+            </select>
+        </div>
+
+        <!-- Regular Note: Text Only -->
+        <div id="regularFields" class="note-type-section" style="display:none;">
+            <div class="form-group">
+                <label for="text">Note Text (Max 100 characters):</label>
+                <input type="text" id="text" class="form-control" maxlength="100" required />
+            </div>
+        </div>
+
+        <!-- Reminder: Text + Reminder Date and Time -->
+        <div id="reminderFields" class="note-type-section" style="display:none;">
+            <div class="form-group">
+                <label for="textReminder">Note Text (Max 100 characters):</label>
+                <input type="text" id="textReminder" class="form-control" maxlength="100" required />
+            </div>
+            <div class="form-group">
+                <label for="reminderDateTime">Reminder Date and Time:</label>
+                <input type="datetime-local" id="reminderDateTime" class="form-control" required />
+            </div>
+        </div>
+
+        <!-- Task: Text + Due Date and Time + Completion Status -->
+        <div id="taskFields" class="note-type-section" style="display:none;">
+            <div class="form-group">
+                <label for="textTask">Note Text (Max 100 characters):</label>
+                <input type="text" id="textTask" class="form-control" maxlength="100" required />
+            </div>
+            <div class="form-group">
+                <label for="dueDateTime">Due Date and Time:</label>
+                <input type="datetime-local" id="dueDateTime" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label for="isTaskCompleted">Is Task Completed?</label>
+                <select id="isTaskCompleted" class="form-control" required>
+                    <option value="false">No</option>
+                    <option value="true">Yes</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Bookmark: URL Input -->
+        <div id="bookmarkFields" class="note-type-section" style="display:none;">
+            <div class="form-group">
+                <label for="bookmarkUrl">Bookmark URL:</label>
+                <input type="url" id="bookmarkUrl" class="form-control" required />
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Create Note</button>
+    </form>
+</div>
+
+<!-- Include Bootstrap JS and Popper.js -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const typeSelect = document.getElementById("type");
+
+        // Show/hide dynamic fields based on selected note type
+        typeSelect.addEventListener("change", function () {
+            const type = parseInt(this.value);
+
+            // Hide all sections first
+            document.querySelectorAll('.note-type-section').forEach(function (section) {
+                section.style.display = "none";
+            });
+
+            // Reset required fields dynamically for validation to work correctly
+            resetRequiredFields();
+
+            // Show relevant fields based on selected type
+            if (type === 0) { // Regular Note
+                document.getElementById("regularFields").style.display = "block";
+                setRequired("text");
+            } else if (type === 1) { // Reminder
+                document.getElementById("reminderFields").style.display = "block";
+                setRequired("textReminder", "reminderDateTime");
+            } else if (type === 2) { // Task
+                document.getElementById("taskFields").style.display = "block";
+                setRequired("textTask", "dueDateTime", "isTaskCompleted");
+            } else if (type === 3) { // Bookmark
+                document.getElementById("bookmarkFields").style.display = "block";
+                setRequired("bookmarkUrl");
+            }
+        });
+
+        // Trigger change event on page load to initialize fields correctly
+        typeSelect.dispatchEvent(new Event("change"));
+
+        // Form submission logic
+        document.getElementById("createNoteForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const userEmail = getUserEmailFromToken();
+            const type = parseInt(document.getElementById("type").value);
+            const token = localStorage.getItem("jwtToken");
+
+            let text = '';
+            if (type === 1) {
+                text = document.getElementById("textReminder").value;
+            } else if (type === 2) {
+                text = document.getElementById("textTask").value;
+            } else {
+                text = document.getElementById("text").value;
+            }
+            if (text.length > 100) {
+                alert("Note text exceeds 100 characters.");
+                return;
+            }
+
+            let reminderDateTime = null;
+            let dueDateTime = null;
+            let isTaskCompleted = null;
+            let bookmarkUrl = null;
+
+            if (type === 1) { // Reminder
+                reminderDateTime = document.getElementById("reminderDateTime").value;
+            } else if (type === 2) { // Task
+                dueDateTime = document.getElementById("dueDateTime").value;
+                isTaskCompleted = document.getElementById("isTaskCompleted").value === "true";
+            } else if (type === 3) { // Bookmark
+                bookmarkUrl = document.getElementById("bookmarkUrl").value;
+            }
+
+            if (!token) {
+                alert("Session expired. Please log in again.");
+                window.location.href = "/Authentication/Login";
+                return;
+            }
+
+            const noteData = {
+                userEmail: userEmail,
+                text: text,
+                type: type,
+                reminderDateTime: reminderDateTime,
+                dueDateTime: dueDateTime,
+                isTaskCompleted: isTaskCompleted,
+                bookmarkUrl: bookmarkUrl
+            };
+
+            try {
+                const response = await fetch("https://localhost:7237/api/Notes", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(noteData)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.message || "Failed to create note.");
+                }
+
+                alert("Note created successfully!");
+                window.location.href = "/Dashboard/Index";
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error: " + error.message);
+            }
+        });
+    });
+
+    function getUserEmailFromToken() {
+        const token = localStorage.getItem("jwtToken");
+        if (!token) return null;
+
+        try {
+            const payload = JSON.parse(atob(token.split(".")[1])); // Decode JWT payload
+            return payload.sub; // Use 'sub' as user identifier (email in this case)
+        } catch (error) {
+            console.error("Error decoding token:", error);
+            return null;
+        }
+    }
+
+    function resetRequiredFields() {
+        // Reset required attributes for all fields
+        document.querySelectorAll('input, select').forEach(function (field) {
+            field.removeAttribute("required");
+        });
+    }
+
+    function setRequired(...fieldIds) {
+        fieldIds.forEach(function (id) {
+            document.getElementById(id).setAttribute("required", true);
+        });
+    }
+</script>
